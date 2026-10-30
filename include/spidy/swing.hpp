@@ -1,6 +1,7 @@
 #pragma once
 #include "math.hpp"
 #include "glider.hpp"
+#include "traversal_flow.hpp"
 #include <cstdint>
 #include <optional>
 #include <vector>
@@ -285,10 +286,13 @@ struct Event {
 };
 class Swing {
   public:
+    void configureFlow(TraversalFlowConfig config) { flow_.configure(config); }
+    unsigned flowCombo() const { return flow_.combo(); }
     void configureGlider(GliderConfig config) { glider_.configure(config); }
     // Native adapters suspend deployment while another system owns locomotion.
     void allowGliderFlight(bool allowed) {
         gliderFlight_ = allowed;
+        if (!allowed) flow_.reset();
         if (!allowed)
             glider_.reset();
     }
@@ -488,6 +492,7 @@ class Swing {
     }
 
   private:
+    TraversalFlow flow_{};
     Glider glider_{};
     bool gliderFlight_ = true;
     void glide(float dt, const Input&);

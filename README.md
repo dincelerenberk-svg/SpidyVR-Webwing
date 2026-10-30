@@ -1,3 +1,7 @@
+## New: Webwing Momentum Preview 2
+
+Experimental dive acceleration, momentum steering, swing-transfer combo and wall-launch assistance. [Turkish controls and feature status](docs/TRAVERSAL-FLOW.md). No in-game/headset validation yet.
+
 ## Türkçe kurulum
 
 **[Modun adım adım Türkçe kurulum ve kullanım kılavuzu](docs/TURKCE-KURULUM.md)** · **[Windows mod paketini indir](https://github.com/dincelerenberk-svg/SpidyVR-Webwing/releases/tag/v0.4.3-webwing-preview.1)**

@@ -208,3 +208,7 @@ if(SPIDY_BUILD_LAUNCHER)
   # Static runtime: the launcher starts on a PC that has no Visual C++ runtime yet and offers to install it.
   set_property(TARGET spidy_launcher PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
+
+add_executable(spidy_flow_tests tests/flow_tests.cpp)
+target_link_libraries(spidy_flow_tests PRIVATE spidy_core)
+add_test(NAME traversal_flow COMMAND spidy_flow_tests)
