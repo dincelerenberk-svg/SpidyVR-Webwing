@@ -12,6 +12,7 @@
 #include <atomic>
 #include <cstring>
 #include <windows.h>
+#include "spidy/glider_settings.hpp"
 using namespace spidy;
 using namespace spidy::game_swing;
 extern "C" {
@@ -497,6 +498,11 @@ void visit(const native_rays::QueryContext& world) {
     }
     // A press aimed at something a web can catch belongs to the grab: the
     // swing gets the input without that hand's grip.
+    // Only extend a flight the swing already owns. Never take a jump, cutscene,
+    // vent, grapple, native move or object hold away from its existing owner.
+    solver.allowGliderFlight(owned && focused && live && !ventMode && !gameRun &&
+                             native_movement::collisionEnabled(motion.collisionFlags) &&
+                             !game_grab::holds(0) && !game_grab::holds(1));
     const auto predicted = solver.predictNativeStep(motion.dt, focused ? game_grab::forSwing(in) : in, world,
                                                     body, inputSeconds);
     if (world.error()) {
@@ -838,6 +844,7 @@ extern "C" __declspec(dllexport) DWORD WINAPI SpidySwingStart(void* input) {
             break;
         started = true;
         solver = Swing(physicsConfig(config));
+        solver.configureGlider(loadGliderSettings());
         QueryPerformanceFrequency(&frequency);
         deadline = config.durationMs ? GetTickCount64() + config.durationMs : UINT64_MAX;
         game_grab::start(config.base, reinterpret_cast<game_grab::Call>(driveMotion),

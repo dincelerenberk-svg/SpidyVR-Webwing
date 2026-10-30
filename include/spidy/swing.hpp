@@ -1,5 +1,6 @@
 #pragma once
 #include "math.hpp"
+#include "glider.hpp"
 #include <cstdint>
 #include <optional>
 #include <vector>
@@ -284,6 +285,15 @@ struct Event {
 };
 class Swing {
   public:
+    void configureGlider(GliderConfig config) { glider_.configure(config); }
+    // Native adapters suspend deployment while another system owns locomotion.
+    void allowGliderFlight(bool allowed) {
+        gliderFlight_ = allowed;
+        if (!allowed)
+            glider_.reset();
+    }
+    bool gliding() const { return glider_.active(); }
+    float gliderOpenness() const { return glider_.openness(); }
     explicit Swing(SwingConfig config = {});
     void update(float seconds, const Input& input, const World& world);
     // Predict a request for an external collision engine. The caller must submit
@@ -478,6 +488,9 @@ class Swing {
     }
 
   private:
+    Glider glider_{};
+    bool gliderFlight_ = true;
+    void glide(float dt, const Input&);
     void clearSlingshot();
     void slingshot(float dt, const Input&, const WorldQueries&);
     bool slingshotEnabled_{}, slingshotPair_{}, slingshotReleasing_{};

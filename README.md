@@ -1,3 +1,46 @@
+# SpidyVR Webwing — experimental custom build
+
+An unofficial, additive web-wing glider extension of
+[iplusd's SpidyVR fork](https://github.com/iplusdvr/iplusds-SpidyVR), based on
+[Ilya Mezerowsky's SpidyVR](https://github.com/IlyaMez/SpidyVR).
+This is **not an official upstream release**. The game itself is not included.
+
+## Webwing controls
+
+Swing to gain momentum, release both webs, then spread both hands to the sides
+near shoulder height while descending. Keep grip and trigger buttons released.
+Hold for 0.2 seconds; the wings open gradually. Look and use the movement stick
+to steer. Bring your hands together or use a web button to fold.
+
+Copy the supplied `spidy-glider.ini` alongside `spidy_ray_bridge.dll` to enable
+the optional locomotion feature; set `Enabled=0` to disable. See
+[full controls, limits and build steps](docs/GLIDER.md).
+
+**Scope:** gliding physics only; there is no visible wing mesh. Deployment in
+the game extends a flight the web-swing solver already owns after web release.
+It does not take over ordinary jumps or the game's own freefall. Existing
+collision and speed limits remain active. No original source lines were removed.
+
+**Validation:** the Windows VR/Observer build and all four CTest targets passed;
+14 glider cases, 378 existing core cases, 24 launcher checks and 133 Python
+protocol tests passed on the development machine. **Not tested in the real game
+or on a VR headset.** Treat this as an experimental prerelease.
+
+## Turkish language resources
+
+[Calypso's Turkish text/subtitle patch](https://www.calypsoceviri.com/turkce-yamalar/marvels-spider-man-remastered-turkce-yama-indir)
+is a separate third-party project. It is not bundled or claimed as our work;
+compatibility with this VR build has not been tested. This is not Turkish dubbing.
+[TanProduction's dubbed story video](https://www.youtube.com/watch?v=4XCW4cMBtRw)
+is a video, not an installable voice pack.
+
+GPL-3.0 applies to this modified mod. Original copyright, attribution and
+third-party notices are retained. Please report custom-build issues to this
+repository rather than upstream. Upstream launcher's update feature may replace
+custom binaries with the standard upstream version.
+
+---
+
 # iplusd's SpidyVR fork
 
 This fork adds a bunch of new features to [SpidyVR](https://github.com/IlyaMez/SpidyVR), the Marvel's Spider-Man Remastered VR mod by Ilya Mezerowsky. 

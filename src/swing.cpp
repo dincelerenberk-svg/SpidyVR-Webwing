@@ -607,6 +607,7 @@ void Swing::holdWall(float dt, float before, const World* collision) {
     wall_.distance = distance + shift;
 }
 void Swing::reset(Body b) {
+    glider_.reset();
     if (!finite(b.position) || !finite(b.velocity))
         throw std::invalid_argument("Invalid body");
     clearSlingshot();
@@ -756,6 +757,7 @@ WebShot Swing::shot(Pose aim, Vec3 from, const WorldQueries& world) const {
     return out;
 }
 void Swing::releaseAll() {
+    glider_.reset();
     clearSlingshot();
     for (int i = 0; i < 2; ++i) {
         release(i);
@@ -1068,6 +1070,8 @@ void Swing::step(float dt, const Input& in, const WorldQueries& world, const Wor
     }
     const float wallBefore = wall_.on ? dot(body_.position - wall_.point, wall_.normal) : 0.f;
     const Vec3 before = body_.position;
+    if (wall_.on)
+        glider_.reset();
     if (wall_.on) {
         // On a wall the stick walks it, and gravity does not pull along it.
         wallMotion(dt, in);
@@ -1094,11 +1098,14 @@ void Swing::step(float dt, const Input& in, const WorldQueries& world, const Wor
             body_.velocity -= crestNormal_ * (config_.crestPush * dt);
         }
         body_.velocity = limited(body_.velocity, config_.maxSpeed);
+        glide(dt, in);
         body_.grounded = supported;
         if (!supported && !wasGrounded)
             skimGround(dt, world);
     }
     move(body_.position + body_.velocity * dt, collision);
+    if (body_.grounded)
+        glider_.reset();
     for (int i = 0; i < 2; ++i) {
         auto& w = webs_[i];
         if (!w.attached)
@@ -1203,6 +1210,8 @@ void Swing::step(float dt, const Input& in, const WorldQueries& world, const Wor
 }
 void Swing::update(float seconds, const Input& input, const World& world) {
     events_.clear();
+    if (!input.focused || !std::isfinite(seconds) || seconds <= 0 || seconds > .1f)
+        glider_.reset();
     if (!std::isfinite(seconds) || seconds <= 0)
         return;
     if (!input.focused || seconds > .1f) {
@@ -1241,6 +1250,9 @@ MotionIntent Swing::predictNativeStep(float seconds, const Input& input, const W
 MotionIntent Swing::predictNativeStep(float seconds, const Input& input, const WorldQueries& world,
                                       Body actual, float inputSeconds) {
     events_.clear();
+    if (!input.focused || !std::isfinite(seconds) || seconds <= 0 || seconds > longestNativeStep ||
+        !std::isfinite(inputSeconds) || inputSeconds < 0 || inputSeconds > .1f)
+        glider_.reset();
     accumulator_ = 0;
     if (!std::isfinite(seconds) || seconds <= 0 || !input.focused ||
         !std::isfinite(inputSeconds) || inputSeconds < 0 || !finite(actual.position) ||
@@ -1281,5 +1293,21 @@ MotionIntent Swing::predictNativeStep(float seconds, const Input& input, const W
     body_.position = actual.position;
     body_.grounded = actual.grounded;
     return result;
+}
+void Swing::glide(float dt, const Input& in) {
+    GliderInput sample;
+    sample.focused = in.focused;
+    sample.airborne = !body_.grounded;
+    sample.blocked = wall_.on || gameHolds_ || webs_[0].attached || webs_[1].attached;
+    sample.blocked |= !gliderFlight_;
+    sample.look = in.look;
+    sample.move = in.move;
+    for (int i = 0; i < 2; ++i) {
+        sample.hands[i] = in.hands[i].gripRelativeToHead;
+        sample.tracked[i] = in.hands[i].tracked;
+        sample.grips[i] = in.hands[i].grip;
+        sample.triggers[i] = in.hands[i].trigger;
+    }
+    glider_.step(dt, sample, body_.velocity, config_.gravity, config_.maxSpeed);
 }
 } // namespace spidy
