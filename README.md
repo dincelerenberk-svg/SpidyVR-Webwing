@@ -1,3 +1,11 @@
+## Türkçe kurulum
+
+**[Modun adım adım Türkçe kurulum ve kullanım kılavuzu](docs/TURKCE-KURULUM.md)** · **[Windows mod paketini indir](https://github.com/dincelerenberk-svg/SpidyVR-Webwing/releases/tag/v0.4.3-webwing-preview.1)**
+
+ZIP’i tamamen ayrı bir klasöre çıkart, `Spidy Launcher.exe` dosyasını aç ve `START VR` seç. Ayrıntılar, VR gereksinimleri ve glider kontrolleri yukarıdaki kılavuzda.
+
+---
+
 # SpidyVR Webwing — experimental custom build
 
 An unofficial, additive web-wing glider extension of
